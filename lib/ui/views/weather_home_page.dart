@@ -20,7 +20,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   late WeatherHomeViewController _viewController;
   // Controller para campo de busca
   final searchController = TextEditingController();
-
+  
   @override
   void initState() {
     super.initState();
@@ -49,6 +49,8 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
       searchController.clear();
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +81,16 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                   onSearch: _onSearch,
                   isLoading: _viewController.isLoadingWeather,
                 ),
+                        ElevatedButton(
+      onPressed: () {
+        // Simula o refresh
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Refresh acionado via botão')),
+        );
+        _viewController.onRefresh();
+      },
+      child: Text('Testar Refresh'),
+    ),
                 Watch(
                   (_) =>
                       _viewController.errorMessage.value != null

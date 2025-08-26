@@ -3,6 +3,8 @@ import 'package:signals_flutter/signals_flutter.dart';
 import 'package:weather_app/domain/models/weather.dart';
 import 'package:weather_app/domain/usecases/weather_usecases_facade_contract.dart';
 import 'package:weather_app/ui/commands/wether_command_impl.dart';
+import 'dart:async';
+
 
 class WeatherHomeViewController {
   // Dependências injetadas
@@ -10,6 +12,8 @@ class WeatherHomeViewController {
 
   // Signals de estado geral da ViewController
   final _isInitialized = signal<bool>(false);
+
+  Timer? _refreshTimer;
 
   // Estado do ViewController usando Signals
   final _currentWeather = signal<Weather?>(null);
@@ -58,6 +62,17 @@ class WeatherHomeViewController {
     : _weatherFacade = weatherFacade {
     _initializeCommands();
     _initializeData();
+    _startAutoRefresh();
+  }
+
+  void _startAutoRefresh() {
+    // Cancela qualquer timer existente
+    _refreshTimer?.cancel();
+    
+    // Cria um novo timer que dispara a cada 5 minutos
+    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      onRefresh();
+    });
   }
 
   // Inicializar comandos
@@ -141,7 +156,7 @@ class WeatherHomeViewController {
   }
 
   Future<void> onRefresh() async {
-    final currentCity = _currentWeather.value?.cityName;
+      final currentCity = _currentWeather.value?.cityName;
     if (currentCity != null) {
       await searchWeatherByCity(currentCity);
     } else {
@@ -195,5 +210,6 @@ class WeatherHomeViewController {
     _getWeatherByCoordinatesCommand.reset();
     _getForecastByCoordinatesCommand.reset();
     _getCompleteWeatherCommand.reset();
+    _refreshTimer?.cancel();
   }
 }
