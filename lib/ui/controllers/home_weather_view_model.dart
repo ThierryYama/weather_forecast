@@ -15,6 +15,7 @@ class WeatherHomeViewController {
   final _currentWeather = signal<Weather?>(null);
   final _forecast = signal<List<WeatherForecast>>([]);
   final _errorMessage = signal<String?>(null);
+  String? get currentCity => _currentWeather.value?.cityName;
 
   // Getters para acessar signals (readonly)
   ReadonlySignal<Weather?> get currentWeather => _currentWeather.readonly();
@@ -123,10 +124,10 @@ class WeatherHomeViewController {
       if (_getCompleteWeatherCommand.isSuccess.value) {
         final data =
             _getCompleteWeatherCommand.result.value?.successValueOrNull;
-        
+
         _currentWeather.value = data?.$1;
         _forecast.value = data!.$2;
-        
+
         _clearError();
       }
     });
@@ -137,6 +138,16 @@ class WeatherHomeViewController {
     _currentWeather.value = WeatherData.getCurrentWeather();
     _forecast.value = WeatherData.getForecast();
     _isInitialized.value = true;
+  }
+
+  Future<void> onRefresh() async {
+    final currentCity = _currentWeather.value?.cityName;
+    if (currentCity != null) {
+      await searchWeatherByCity(currentCity);
+    } else {
+      _setError('Nome da cidade é obrigatório');
+      return;
+    }
   }
 
   // Buscar clima por nome da cidade
@@ -163,11 +174,12 @@ class WeatherHomeViewController {
   void _setError(String message) {
     _errorMessage.value = message;
   }
-   // Limpar busca
+
+  // Limpar busca
   void clearSearch() {
     _clearError();
     _initializeData();
-    
+
     // Limpar comandos
     _getCurrentWeatherCommand.clear();
     _getForecastCommand.clear();
@@ -175,7 +187,8 @@ class WeatherHomeViewController {
     _getForecastByCoordinatesCommand.clear();
     _getCompleteWeatherCommand.clear();
   }
-    // Dispose resources
+
+  // Dispose resources
   void dispose() {
     _getCurrentWeatherCommand.reset();
     _getForecastCommand.reset();

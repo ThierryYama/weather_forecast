@@ -63,6 +63,9 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
         // use refresh indicator para permitir que o usuário atualize os dados puxando para baixo
         child: RefreshIndicator(
           onRefresh: () async {
+            
+            
+            await _viewController.onRefresh();
             // Aqui você pode chamar o método de atualização de dados
             // Exemplo: await _weatherController.refreshWeatherData();
           },
@@ -100,7 +103,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                 // Detalhes do clima
                 Watch(
                   (_) =>
-                      _viewController.currentWeather.value != null 
+                      _viewController.currentWeather.value != null
                           ? WeatherDetailsCard(
                             weather: _viewController.currentWeather.value!,
                           )
@@ -112,7 +115,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                 // Lista de previsão
                 Watch(
                   (_) =>
-                      _viewController.forecast.value.isNotEmpty 
+                      _viewController.forecast.value.isNotEmpty
                           ? ForecastList(
                             forecasts: _viewController.forecast.value,
                           )
