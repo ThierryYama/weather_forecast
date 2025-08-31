@@ -30,10 +30,9 @@ class WeatherApiService implements IWeatherService {
       final url = ApiConfig.buildForecastUrl(cityName);
       final data = await ApiHttpClientService.get(url);
 
-      final List<dynamic> forecastList = data['list'];
+      final List<dynamic> forecastList = data['forecast']['forecastday'];
       final forecast =
           forecastList
-              .where((item) => _isDailyForecast(item['dt_txt']))
               .take(5)
               .map((item) => WeatherForecast.fromJson(item))
               .toList();
@@ -42,7 +41,7 @@ class WeatherApiService implements IWeatherService {
     } on ApiException catch (e) {
       return Error(ApiException(e.msg));
     } catch (e) {
-      return Error(DefaultError('Erro ao buscar clima atual: $e.'));
+      return Error(DefaultError('Erro ao buscar previsão: $e.'));
     }
   }
 
@@ -72,10 +71,9 @@ class WeatherApiService implements IWeatherService {
       final url = ApiConfig.buildForecastByCoordinatesUrl(lat, lon);
       final data = await ApiHttpClientService.get(url);
 
-      final List<dynamic> forecastList = data['list'];
+      final List<dynamic> forecastList = data['forecast']['forecastday'];
       final forecast =
           forecastList
-              .where((item) => _isDailyForecast(item['dt_txt']))
               .take(5)
               .map((item) => WeatherForecast.fromJson(item))
               .toList();
@@ -84,12 +82,12 @@ class WeatherApiService implements IWeatherService {
     } on ApiException catch (e) {
       return Error(ApiException(e.msg));
     } catch (e) {
-      return Error(DefaultError('Erro ao buscar clima atual: $e.'));
+      return Error(DefaultError('Erro ao buscar previsão: $e.'));
     }
   }
 
-  // Filtrar apenas previsões diárias (12:00)
-  static bool _isDailyForecast(String dateTime) {
-    return dateTime.contains('12:00:00');
-  }
+  // A API WeatherAPI já retorna a previsão diária, então este método não é mais necessário.
+  // static bool _isDailyForecast(String dateTime) {
+  //   return dateTime.contains('12:00:00');
+  // }
 }
