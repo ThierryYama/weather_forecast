@@ -12,11 +12,9 @@ class ApiHttpClientService {
     Map<String, String>? headers,
   }) async {
     try {
-      
-      // TODO: Remover Future.delayed e _mockResponse() após testes
-      // usando mock provisioriamente
-      Future.delayed(Duration(seconds: 5));
-      return _mockResponse();
+      // Descomente as linhas abaixo para usar dados de teste (mock)
+      // await Future.delayed(const Duration(seconds: 2));
+      // return _mockResponse(url);
 
       final response = await http
           .get(
@@ -82,103 +80,87 @@ class ApiHttpClientService {
     }
   }
 
-  static Map<String, dynamic> _mockResponse() {
-    const jsonString = '''
+  static Map<String, dynamic> _mockResponse(String url) {
+    if (url.contains('current.json')) {
+      // Mock para clima atual
+      const jsonString = '''
       {
-        "name": "Futsal City",
-        "main": {
-          "temp": 24.5,
-          "pressure": 1013,
-          "humidity": 60
+        "location": {
+          "name": "Futsal City"
         },
-        "weather": [
-          {
-            "main": "Clear",
-            "description": "céu limpo"
+        "current": {
+          "temp_c": 24.5,
+          "pressure_mb": 1013,
+          "humidity": 60,
+          "wind_kph": 5.5,
+          "condition": {
+            "text": "Sunny"
           }
-        ],
-        "wind": {
-          "speed": 3.5
-        },
-        "list": [
-          {
-            "dt_txt": "2025-08-16 12:00:00",
-            "main": {
-              "temp_min": 17.0,
-              "temp_max": 25.0,
-              "pressure": 1012,
-              "humidity": 60
-            },
-            "weather": [
-              {
-                "main": "Clear",
-                "description": "céu limpo"
-              }
-            ]
-          },
-          {
-            "dt_txt": "2025-08-17 12:00:00",
-            "main": {
-              "temp_min": 15.0,
-              "temp_max": 21.0,
-              "pressure": 1015,
-              "humidity": 70
-            },
-            "weather": [
-              {
-                "main": "Clouds",
-                "description": "parcialmente nublado"
-              }
-            ]
-          },
-          {
-            "dt_txt": "2025-08-18 12:00:00",
-            "main": {
-              "temp_min": 13.0,
-              "temp_max": 18.0,
-              "pressure": 1008,
-              "humidity": 80
-            },
-            "weather": [
-              {
-                "main": "Rain",
-                "description": "chuva leve"
-              }
-            ]
-          },
-          {
-            "dt_txt": "2025-08-19 12:00:00",
-            "main": {
-              "temp_min": 16.0,
-              "temp_max": 24.0,
-              "pressure": 1010,
-              "humidity": 68
-            },
-            "weather": [
-              {
-                "main": "Clouds",
-                "description": "nuvens dispersas"
-              }
-            ]
-          },
-          {
-            "dt_txt": "2025-08-20 12:00:00",
-            "main": {
-              "temp_min": 20.0,
-              "temp_max": 28.0,
-              "pressure": 1011,
-              "humidity": 55
-            },
-            "weather": [
-              {
-                "main": "Clear",
-                "description": "ensolarado"
-              }
-            ]
-          }
-        ]
+        }
       }
       ''';
-    return json.decode(jsonString);
+      return json.decode(jsonString);
+    } else {
+      // Mock para previsão
+      const jsonString = '''
+      {
+        "forecast": {
+          "forecastday": [
+            {
+              "date": "2025-08-16",
+              "day": {
+                "maxtemp_c": 25.0,
+                "mintemp_c": 17.0,
+                "condition": {
+                  "text": "Sunny"
+                }
+              }
+            },
+            {
+              "date": "2025-08-17",
+              "day": {
+                "maxtemp_c": 21.0,
+                "mintemp_c": 15.0,
+                "condition": {
+                  "text": "Partly cloudy"
+                }
+              }
+            },
+            {
+              "date": "2025-08-18",
+              "day": {
+                "maxtemp_c": 18.0,
+                "mintemp_c": 13.0,
+                "condition": {
+                  "text": "Patchy rain possible"
+                }
+              }
+            },
+            {
+              "date": "2025-08-19",
+              "day": {
+                "maxtemp_c": 24.0,
+                "mintemp_c": 16.0,
+                "condition": {
+                  "text": "Cloudy"
+                }
+              }
+            },
+            {
+              "date": "2025-08-20",
+              "day": {
+                "maxtemp_c": 28.0,
+                "mintemp_c": 20.0,
+                "condition": {
+                  "text": "Clear"
+                }
+              }
+            }
+          ]
+        }
+      }
+      ''';
+      return json.decode(jsonString);
+    }
   }
 }
